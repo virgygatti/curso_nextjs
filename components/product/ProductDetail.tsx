@@ -6,6 +6,7 @@ import Slider from '@/components/ui/Slider';
 import Counter from '@/components/ui/Counter';
 import Button from '@/components/ui/Button';
 import { useState } from 'react';
+import { useCart } from '@/context/CartContext';
 
 interface ProductDetailProps {
   product: Product;
@@ -13,11 +14,29 @@ interface ProductDetailProps {
 
 export default function ProductDetail({ product }: ProductDetailProps) {
   const [quantity, setQuantity] = useState(1);
+  const [isAdding, setIsAdding] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const { addItem } = useCart();
   const images = product.images || [product.image];
 
-  const handleAddToCart = () => {
-    // Por ahora solo simulamos, en la siguiente fase usaremos Context
-    alert(`Agregado al carrito: ${product.name} x${quantity}`);
+  const handleAddToCart = async () => {
+    setError(null);
+    setSuccess(false);
+    if (quantity < 1 || quantity > product.stock) {
+      setError('Cantidad no válida.');
+      return;
+    }
+    setIsAdding(true);
+    try {
+      addItem(product, quantity);
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'No se pudo agregar al carrito.');
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   return (
@@ -67,9 +86,20 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             />
           </div>
 
+          {error && (
+            <p className="text-red-600 text-sm mb-2" role="alert">
+              {error}
+            </p>
+          )}
+          {success && (
+            <p className="text-green-600 text-sm mb-2" role="status">
+              Agregado al carrito correctamente.
+            </p>
+          )}
           <Button
             onClick={handleAddToCart}
             disabled={product.stock === 0}
+            loading={isAdding}
             className="w-full"
           >
             {product.stock > 0 ? 'Agregar al Carrito' : 'Sin Stock'}

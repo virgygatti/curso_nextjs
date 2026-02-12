@@ -1,12 +1,12 @@
 import Link from 'next/link';
-import { mockProducts } from '@/data/mockData';
-import ProductList from '@/components/product/ProductList';
+import { Suspense } from 'react';
 import Button from '@/components/ui/Button';
+import FeaturedProducts from './FeaturedProducts';
+import FeaturedSkeleton from './FeaturedSkeleton';
+
+export const revalidate = 60;
 
 export default function Home() {
-  // Mostrar solo los primeros 4 productos como destacados
-  const featuredProducts = mockProducts.slice(0, 4);
-
   return (
     <div className="container mx-auto px-4 py-8">
       <section className="mb-12 text-center">
@@ -21,7 +21,9 @@ export default function Home() {
 
       <section>
         <h2 className="text-2xl font-semibold mb-6">Productos Destacados</h2>
-        <ProductList products={featuredProducts} />
+        <Suspense fallback={<FeaturedSkeleton />}>
+          <FeaturedProducts />
+        </Suspense>
       </section>
     </div>
   );

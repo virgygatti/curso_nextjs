@@ -23,6 +23,7 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
   );
 
   const [errors, setErrors] = useState<Partial<Record<keyof ProductFormData, string>>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof ProductFormData, string>> = {};
@@ -50,10 +51,15 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) {
+    if (!validate()) return;
+    setIsSubmitting(true);
+    try {
+      await new Promise((r) => setTimeout(r, 400));
       onSubmit(formData);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -140,7 +146,9 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
       </div>
 
       <div className="flex gap-4">
-        <Button type="submit">{product ? 'Actualizar' : 'Crear'} Producto</Button>
+        <Button type="submit" loading={isSubmitting} disabled={isSubmitting}>
+          {product ? 'Actualizar' : 'Crear'} Producto
+        </Button>
         {onCancel && (
           <Button type="button" variant="secondary" onClick={onCancel}>
             Cancelar

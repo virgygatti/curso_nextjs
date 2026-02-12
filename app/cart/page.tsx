@@ -5,28 +5,12 @@ import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import Counter from '@/components/ui/Counter';
 import Image from 'next/image';
-import { CartItem } from '@/types';
+import { useCart } from '@/context/CartContext';
 
 export default function CartPage() {
-  // Por ahora usamos estado local, en la siguiente fase usaremos Context
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-
-  const updateQuantity = (productId: string, quantity: number) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item
-      )
-    );
-  };
-
-  const removeItem = (productId: string) => {
-    setCartItems((items) => items.filter((item) => item.product.id !== productId));
-  };
-
-  const total = cartItems.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0
-  );
+  const { items: cartItems, updateQuantity, removeItem, totalPrice: total } = useCart();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   if (cartItems.length === 0) {
     return (
@@ -69,6 +53,7 @@ export default function CartPage() {
                   </p>
                   <div className="flex items-center gap-4">
                     <Counter
+                      key={`${item.product.id}-${item.quantity}`}
                       initialValue={item.quantity}
                       min={1}
                       max={item.product.stock}
@@ -106,7 +91,27 @@ export default function CartPage() {
                 <span>${total.toFixed(2)}</span>
               </div>
             </div>
-            <Button className="w-full" onClick={() => alert('Funcionalidad de checkout en desarrollo')}>
+            {checkoutError && (
+              <p className="text-red-600 text-sm mb-2" role="alert">
+                {checkoutError}
+              </p>
+            )}
+            <Button
+              className="w-full"
+              loading={isCheckingOut}
+              onClick={async () => {
+                setCheckoutError(null);
+                setIsCheckingOut(true);
+                try {
+                  await new Promise((resolve) => setTimeout(resolve, 800));
+                  setCheckoutError('Checkout en desarrollo. Próximamente disponible.');
+                } catch (e) {
+                  setCheckoutError(e instanceof Error ? e.message : 'Error al procesar.');
+                } finally {
+                  setIsCheckingOut(false);
+                }
+              }}
+            >
               Finalizar Compra
             </Button>
           </div>

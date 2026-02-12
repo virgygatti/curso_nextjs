@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import CartLink from './CartLink';
 
 export default function Navbar() {
   return (
@@ -16,12 +17,7 @@ export default function Navbar() {
               >
                 Catálogo
               </Link>
-              <Link
-                href="/cart"
-                className="text-gray-700 hover:text-blue-600 transition-colors"
-              >
-                Carrito
-              </Link>
+              <CartLink />
               <Link
                 href="/admin"
                 className="text-gray-700 hover:text-blue-600 transition-colors"
