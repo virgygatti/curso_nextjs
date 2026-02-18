@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import Counter from '@/components/ui/Counter';
@@ -9,8 +8,6 @@ import { useCart } from '@/context/CartContext';
 
 export default function CartPage() {
   const { items: cartItems, updateQuantity, removeItem, totalPrice: total } = useCart();
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   if (cartItems.length === 0) {
     return (
@@ -91,29 +88,9 @@ export default function CartPage() {
                 <span>${total.toFixed(2)}</span>
               </div>
             </div>
-            {checkoutError && (
-              <p className="text-red-600 text-sm mb-2" role="alert">
-                {checkoutError}
-              </p>
-            )}
-            <Button
-              className="w-full"
-              loading={isCheckingOut}
-              onClick={async () => {
-                setCheckoutError(null);
-                setIsCheckingOut(true);
-                try {
-                  await new Promise((resolve) => setTimeout(resolve, 800));
-                  setCheckoutError('Checkout en desarrollo. Próximamente disponible.');
-                } catch (e) {
-                  setCheckoutError(e instanceof Error ? e.message : 'Error al procesar.');
-                } finally {
-                  setIsCheckingOut(false);
-                }
-              }}
-            >
-              Finalizar Compra
-            </Button>
+            <Link href="/checkout" className="block">
+              <Button className="w-full">Finalizar Compra</Button>
+            </Link>
           </div>
         </div>
       </div>
