@@ -5,11 +5,15 @@ import {
   getDoc,
   query,
   orderBy,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  increment,
   type DocumentData,
   type QuerySnapshot,
 } from 'firebase/firestore';
 import { db } from './config';
-import type { Product } from '@/types';
+import type { Product, ProductFormData } from '@/types';
 
 const PRODUCTS_COLLECTION = 'products';
 
@@ -63,4 +67,57 @@ export async function getCategories(): Promise<string[]> {
   const products = await getProducts();
   const set = new Set(products.map((p) => p.category).filter(Boolean));
   return Array.from(set).sort();
+}
+
+function productFormToFirestore(data: ProductFormData): DocumentData {
+  const urls =
+    data.images?.filter(Boolean).length > 0
+      ? data.images.filter(Boolean)
+      : data.image
+        ? [data.image]
+        : [];
+  const primary = urls[0] ?? data.image ?? '';
+  return {
+    name: data.name,
+    description: data.description,
+    price: data.price,
+    image: primary,
+    images: urls,
+    category: data.category,
+    stock: data.stock,
+  };
+}
+
+/**
+ * Crear un nuevo producto en Firestore.
+ */
+export async function createProduct(data: ProductFormData): Promise<Product> {
+  const ref = await addDoc(collection(db, PRODUCTS_COLLECTION), productFormToFirestore(data));
+  const created = await getProductById(ref.id);
+  if (!created) throw new Error('Error al crear el producto');
+  return created;
+}
+
+/**
+ * Actualizar un producto existente.
+ */
+export async function updateProduct(id: string, data: ProductFormData): Promise<void> {
+  const ref = doc(db, PRODUCTS_COLLECTION, id);
+  await updateDoc(ref, productFormToFirestore(data));
+}
+
+/**
+ * Eliminar un producto.
+ */
+export async function deleteProduct(id: string): Promise<void> {
+  const ref = doc(db, PRODUCTS_COLLECTION, id);
+  await deleteDoc(ref);
+}
+
+/**
+ * Decrementar stock de un producto (para órdenes).
+ */
+export async function decrementStock(productId: string, quantity: number): Promise<void> {
+  const ref = doc(db, PRODUCTS_COLLECTION, productId);
+  await updateDoc(ref, { stock: increment(-quantity) });
 }

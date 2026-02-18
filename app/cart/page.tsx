@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import Counter from '@/components/ui/Counter';
@@ -9,8 +8,6 @@ import { useCart } from '@/context/CartContext';
 
 export default function CartPage() {
   const { items: cartItems, updateQuantity, removeItem, totalPrice: total } = useCart();
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   if (cartItems.length === 0) {
     return (
@@ -47,8 +44,8 @@ export default function CartPage() {
                   />
                 </div>
                 <div className="flex-grow">
-                  <h3 className="font-semibold mb-1">{item.product.name}</h3>
-                  <p className="text-gray-600 text-sm mb-2">
+                  <h3 className="font-semibold text-slate-900 mb-1">{item.product.name}</h3>
+                  <p className="text-gray-700 text-sm mb-2">
                     ${item.product.price.toFixed(2)}
                   </p>
                   <div className="flex items-center gap-4">
@@ -80,40 +77,20 @@ export default function CartPage() {
 
         <div className="lg:col-span-1">
           <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-            <h2 className="text-xl font-semibold mb-4">Resumen</h2>
+            <h2 className="text-xl font-semibold text-slate-900 mb-4">Resumen</h2>
             <div className="space-y-2 mb-4">
               <div className="flex justify-between">
-                <span>Subtotal:</span>
-                <span>${total.toFixed(2)}</span>
+                <span className="text-gray-700">Subtotal:</span>
+                <span className="font-medium text-slate-900">${total.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between font-semibold text-lg">
-                <span>Total:</span>
-                <span>${total.toFixed(2)}</span>
+              <div className="flex justify-between font-semibold text-lg border-t border-gray-200 pt-2">
+                <span className="text-slate-900">Total:</span>
+                <span className="text-slate-900">${total.toFixed(2)}</span>
               </div>
             </div>
-            {checkoutError && (
-              <p className="text-red-600 text-sm mb-2" role="alert">
-                {checkoutError}
-              </p>
-            )}
-            <Button
-              className="w-full"
-              loading={isCheckingOut}
-              onClick={async () => {
-                setCheckoutError(null);
-                setIsCheckingOut(true);
-                try {
-                  await new Promise((resolve) => setTimeout(resolve, 800));
-                  setCheckoutError('Checkout en desarrollo. Próximamente disponible.');
-                } catch (e) {
-                  setCheckoutError(e instanceof Error ? e.message : 'Error al procesar.');
-                } finally {
-                  setIsCheckingOut(false);
-                }
-              }}
-            >
-              Finalizar Compra
-            </Button>
+            <Link href="/checkout" className="block">
+              <Button className="w-full">Finalizar Compra</Button>
+            </Link>
           </div>
         </div>
       </div>

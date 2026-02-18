@@ -17,7 +17,7 @@ export const mockProducts: Product[] = [
     description: 'Descripción detallada del producto ejemplo 2',
     price: 149.99,
     image: '/images/product2.jpg',
-    category: 'ropa',
+    category: 'libros',
     stock: 5,
     images: ['/images/product2.jpg']
   },
@@ -45,9 +45,9 @@ export const mockProducts: Product[] = [
     description: 'Descripción detallada del producto ejemplo 5',
     price: 79.99,
     image: '/images/product5.jpg',
-    category: 'ropa',
+    category: 'libros',
     stock: 20,
   },
 ];
 
-export const categories = ['electronica', 'ropa', 'hogar'];
+export const categories = ['electronica', 'libros', 'hogar'];
