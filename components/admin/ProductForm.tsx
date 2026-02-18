@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ProductFormData } from '@/types';
 import Button from '@/components/ui/Button';
+import ImageUpload from './ImageUpload';
 
 interface ProductFormProps {
   product?: ProductFormData;
@@ -73,22 +74,22 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium mb-1">Nombre</label>
+        <label className="form-label">Nombre</label>
         <input
           type="text"
           value={formData.name}
           onChange={(e) => handleChange('name', e.target.value)}
-          className="w-full px-3 py-2 border rounded-lg"
+          className="input-form"
         />
         {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Descripción</label>
+        <label className="form-label">Descripción</label>
         <textarea
           value={formData.description}
           onChange={(e) => handleChange('description', e.target.value)}
-          className="w-full px-3 py-2 border rounded-lg"
+          className="input-form"
           rows={4}
         />
         {errors.description && (
@@ -98,36 +99,36 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Precio</label>
+          <label className="form-label">Precio</label>
           <input
             type="number"
             step="0.01"
             value={formData.price}
             onChange={(e) => handleChange('price', parseFloat(e.target.value) || 0)}
-            className="w-full px-3 py-2 border rounded-lg"
+            className="input-form"
           />
           {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Stock</label>
+          <label className="form-label">Stock</label>
           <input
             type="number"
             value={formData.stock}
             onChange={(e) => handleChange('stock', parseInt(e.target.value) || 0)}
-            className="w-full px-3 py-2 border rounded-lg"
+            className="input-form"
           />
           {errors.stock && <p className="text-red-500 text-sm mt-1">{errors.stock}</p>}
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Categoría</label>
+        <label className="form-label">Categoría</label>
         <input
           type="text"
           value={formData.category}
           onChange={(e) => handleChange('category', e.target.value)}
-          className="w-full px-3 py-2 border rounded-lg"
+          className="input-form"
         />
         {errors.category && (
           <p className="text-red-500 text-sm mt-1">{errors.category}</p>
@@ -135,14 +136,11 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">URL de Imagen</label>
-        <input
-          type="text"
+        <ImageUpload
           value={formData.image}
-          onChange={(e) => handleChange('image', e.target.value)}
-          className="w-full px-3 py-2 border rounded-lg"
+          onChange={(url) => handleChange('image', url)}
+          error={errors.image}
         />
-        {errors.image && <p className="text-red-500 text-sm mt-1">{errors.image}</p>}
       </div>
 
       <div className="flex gap-4">

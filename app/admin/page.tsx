@@ -1,36 +1,53 @@
 'use client';
 
-import { useState } from 'react';
-import { mockProducts } from '@/data/mockData';
+import { useState, useEffect } from 'react';
 import { Product, ProductFormData } from '@/types';
+import { getProducts, createProduct, updateProduct, deleteProduct } from '@/lib/firebase/products';
 import ProductForm from '@/components/admin/ProductForm';
 import Button from '@/components/ui/Button';
 import Image from 'next/image';
+import Spinner from '@/components/ui/Spinner';
 
 export default function AdminPage() {
-  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [showForm, setShowForm] = useState(false);
 
-  const handleSubmit = (data: ProductFormData) => {
-    if (editingProduct) {
-      // Actualizar producto existente
-      setProducts((prev) =>
-        prev.map((p) =>
-          p.id === editingProduct.id ? { ...p, ...data } : p
-        )
-      );
-      setEditingProduct(null);
-    } else {
-      // Crear nuevo producto
-      const newProduct: Product = {
-        ...data,
-        id: Date.now().toString(),
-      };
-      setProducts((prev) => [...prev, newProduct]);
+  const loadProducts = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const list = await getProducts();
+      setProducts(list);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Error al cargar productos');
+    } finally {
+      setLoading(false);
     }
-    setShowForm(false);
-    alert(editingProduct ? 'Producto actualizado' : 'Producto creado');
+  };
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  const handleSubmit = async (data: ProductFormData) => {
+    setError(null);
+    try {
+      if (editingProduct) {
+        await updateProduct(editingProduct.id, data);
+        await loadProducts();
+        setEditingProduct(null);
+        setShowForm(false);
+      } else {
+        await createProduct(data);
+        await loadProducts();
+        setShowForm(false);
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Error al guardar el producto');
+    }
   };
 
   const handleEdit = (product: Product) => {
@@ -38,9 +55,14 @@ export default function AdminPage() {
     setShowForm(true);
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm('¿Estás seguro de eliminar este producto?')) {
-      setProducts((prev) => prev.filter((p) => p.id !== id));
+  const handleDelete = async (id: string) => {
+    if (!confirm('¿Estás seguro de eliminar este producto?')) return;
+    setError(null);
+    try {
+      await deleteProduct(id);
+      await loadProducts();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Error al eliminar');
     }
   };
 
@@ -58,8 +80,14 @@ export default function AdminPage() {
         )}
       </div>
 
+      {error && (
+        <p className="text-red-600 mb-4" role="alert">
+          {error}
+        </p>
+      )}
+
       {showForm && (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div className="form-card bg-white rounded-lg shadow-md p-6 mb-8">
           <h2 className="text-2xl font-semibold mb-4">
             {editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
           </h2>
@@ -71,11 +99,17 @@ export default function AdminPage() {
         </div>
       )}
 
+      {loading ? (
+        <div className="flex items-center gap-3 py-12">
+          <Spinner size="lg" />
+          <span className="text-gray-600">Cargando productos...</span>
+        </div>
+      ) : (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.map((product) => (
           <div
             key={product.id}
-            className="bg-white rounded-lg shadow-md overflow-hidden"
+            className="form-card bg-white rounded-lg shadow-md overflow-hidden"
           >
             <div className="relative aspect-square w-full">
               <Image
@@ -109,6 +143,7 @@ export default function AdminPage() {
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 }

@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# E-commerce - Next.js
 
-## Getting Started
+Proyecto de e-commerce autoadministrable para Coderhouse (Next.js). Incluye catálogo con filtros por categoría, carrito, checkout, panel de administración protegido con Firebase (Auth, Firestore, Storage) y optimización SEO (metadata, Open Graph).
 
-First, run the development server:
+## Tecnologías
+
+- **Next.js 16** (App Router)
+- **React 19**
+- **TypeScript**
+- **Tailwind CSS**
+- **Firebase** (Authentication, Firestore, Storage)
+
+## Estructura principal
+
+```
+app/
+  catalog/          # Catálogo con filtros por categoría
+  product/[id]/    # Detalle de producto
+  cart/             # Carrito
+  checkout/         # Checkout y orden de compra
+  admin/            # Panel admin (protegido)
+  login/            # Inicio de sesión
+lib/
+  firebase/         # Config, productos, órdenes, storage
+context/
+  CartContext.tsx    # Estado del carrito
+  AuthContext.tsx   # Autenticación
+```
+
+## Requisitos
+
+- Node.js 18+
+- Cuenta en [Firebase](https://console.firebase.google.com) y proyecto con Auth, Firestore y Storage habilitados
+
+## Instalación local
+
+1. Clonar el repositorio e instalar dependencias:
+
+```bash
+git clone <url-del-repo>
+cd nextjs
+npm install
+```
+
+2. Configurar variables de entorno. Crear un archivo `.env.local` en la raíz con:
+
+```env
+# Firebase (desde la consola de Firebase > Configuración del proyecto)
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+```
+
+3. En Firebase Console:
+
+- **Authentication**: habilitar “Correo/Contraseña” y crear al menos un usuario para acceder a `/admin`.
+- **Firestore**: crear la colección `products` (y `orders` se crea al hacer la primera compra). Copiar las reglas desde `firestore.rules`.
+- **Storage**: copiar las reglas desde `storage.rules`.
+
+4. Arrancar el servidor de desarrollo:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrir [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Comando       | Descripción              |
+|---------------|--------------------------|
+| `npm run dev` | Servidor de desarrollo   |
+| `npm run build` | Build para producción |
+| `npm run start` | Servidor en modo producción |
+| `npm run lint` | Ejecutar ESLint          |
 
-## Learn More
+## Reglas de Firebase
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Firestore**: ver y copiar desde `firestore.rules` en la consola (Firestore → Reglas).
+- **Storage**: ver y copiar desde `storage.rules` en la consola (Storage → Reglas).

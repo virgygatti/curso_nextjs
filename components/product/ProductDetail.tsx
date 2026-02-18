@@ -75,8 +75,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium mb-2">
-              Cantidad:
+            <label className="form-label">
+              Cantidad
             </label>
             <Counter
               initialValue={1}

@@ -3,6 +3,20 @@ import { Suspense } from 'react';
 import Button from '@/components/ui/Button';
 import FeaturedProducts from './FeaturedProducts';
 import FeaturedSkeleton from './FeaturedSkeleton';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Inicio',
+  description: 'Bienvenido a nuestro e-commerce. Descubre productos destacados y explora el catálogo.',
+  openGraph: {
+    title: 'E-commerce - Inicio',
+    description: 'Descubre productos destacados y explora el catálogo.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'E-commerce - Inicio',
+  },
+};
 
 export const revalidate = 60;
 

@@ -22,3 +22,23 @@ export interface ProductFormData {
   category: string;
   stock: number;
 }
+
+export interface OrderItem {
+  productId: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+export interface Order {
+  id?: string;
+  items: OrderItem[];
+  total: number;
+  customer: {
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+  };
+  createdAt?: string;
+}
